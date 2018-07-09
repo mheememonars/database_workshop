@@ -31,9 +31,9 @@ func main() {
     fmt.Println("connect success")
 
     defer db.Close()
-    fmt.Println(read(db))
-    fmt.Println(remove(db,"4"))
-    fmt.Println(read(db))
+   // fmt.Println(read(db))
+    fmt.Println(readByCitizenId(db,"1552425252111"))
+   // fmt.Println(read(db))
 }
 
 
@@ -70,7 +70,7 @@ func add(db *sql.DB) bool{
     firstname_mother,lastname_mother,soldier_id
     ,address_id) 
     VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ? ) `)
-
+    defer statement.Close()
     _, err := statement.Exec("1552425252111","ชาติชาย2","เพ็ชรเม็ด","1985","สุชาติ","เพ็ชรเม็ด","สุณี","เพ็ชรเม็ด","8","1")
 		if err != nil {
             panic(err.Error()) 
@@ -81,7 +81,7 @@ func add(db *sql.DB) bool{
 
 func remove(db *sql.DB,id string) bool{
     statement,_ := db.Prepare("DELETE FROM  user WHERE user_id=?")
-
+    defer statement.Close()
     _,err := statement.Exec(id)
     if err != nil {
         panic(err.Error()) 
@@ -89,3 +89,39 @@ func remove(db *sql.DB,id string) bool{
     }
     return true
 }
+
+func edit(db *sql.DB,id string,fatherName string) bool{
+    statement,_ := db.Prepare("UPDATE `user` SET firstname_father=? WHERE user_id=?")
+    defer statement.Close()
+    _,err := statement.Exec(fatherName,id)
+    if err != nil {
+        panic(err.Error()) 
+        return false
+    }
+    return true
+}
+
+func readByCitizenId(db *sql.DB,citizenId string) UserData{
+    results,_ := db.Query("SELECT * FROM user WHERE citizen_id = ?",citizenId)
+    var userData UserData
+    for results.Next() {
+        err := results.Scan(
+            &userData.Id, 
+            &userData.CitizenId,
+            &userData.Firstname,
+            &userData.Lastname,
+            &userData.BirthYear,
+            &userData.FirstnameFather,
+            &userData.LastnameFather,
+            &userData.FirstnameMother,
+            &userData.LastnameMother,
+            &userData.SoldierId,
+            &userData.AddressId,
+        )
+        if err != nil {
+            panic(err.Error()) 
+        }
+    }
+    return userData
+}
+
