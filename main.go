@@ -20,6 +20,7 @@ type UserData struct{
     AddressId int
 }
 
+
 func main() {
     db, err := sql.Open("mysql", "root:@tcp(127.0.0.1:3306)/testsck")
 
@@ -30,13 +31,18 @@ func main() {
     fmt.Println("connect success")
 
     defer db.Close()
+    fmt.Println(read(db))
+}
 
+
+func read(db *sql.DB) []UserData{
     results,_ := db.Query("SELECT * FROM user")
+
+    var userDataList []UserData
 
     for results.Next() {
         var userData UserData
-        
-        err = results.Scan(
+        err := results.Scan(
             &userData.Id, 
             &userData.CitizenId,
             &userData.Firstname,
@@ -52,7 +58,8 @@ func main() {
         if err != nil {
             panic(err.Error()) 
         }
-        fmt.Println(userData)
+        userDataList = append(userDataList, userData)
     }
 
+    return userDataList
 }
