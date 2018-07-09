@@ -102,26 +102,22 @@ func edit(db *sql.DB,id string,fatherName string) bool{
 }
 
 func readByCitizenId(db *sql.DB,citizenId string) UserData{
-    results,_ := db.Query("SELECT * FROM user WHERE citizen_id = ?",citizenId)
     var userData UserData
-    for results.Next() {
-        err := results.Scan(
-            &userData.Id, 
-            &userData.CitizenId,
-            &userData.Firstname,
-            &userData.Lastname,
-            &userData.BirthYear,
-            &userData.FirstnameFather,
-            &userData.LastnameFather,
-            &userData.FirstnameMother,
-            &userData.LastnameMother,
-            &userData.SoldierId,
-            &userData.AddressId,
-        )
-        if err != nil {
-            panic(err.Error()) 
-        }
+    err := db.QueryRow("SELECT * FROM user WHERE citizen_id = ?",citizenId).Scan(
+        &userData.Id, 
+        &userData.CitizenId,
+        &userData.Firstname,
+        &userData.Lastname,
+        &userData.BirthYear,
+        &userData.FirstnameFather,
+        &userData.LastnameFather,
+        &userData.FirstnameMother,
+        &userData.LastnameMother,
+        &userData.SoldierId,
+        &userData.AddressId,
+    )
+    if err != nil {
+        panic(err)
     }
-    return userData
 }
 
