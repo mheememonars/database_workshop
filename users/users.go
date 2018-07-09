@@ -5,8 +5,24 @@ import (
     _ "github.com/go-sql-driver/mysql"
 )
 
-func Read(db *sql.DB) []UserData{
-    results,_ := db.Query("SELECT * FROM user")
+type UserData struct{
+    Id int 
+    CitizenId string
+    Firstname string
+    Lastname string
+    BirthYear int
+    FirstnameFather string
+    LastnameFather string
+    FirstnameMother string
+    LastnameMother string
+    SoldierId int
+    AddressId int
+}
+type UserService struct {
+    Db *sql.DB
+}
+func (userService UserService) Read() []UserData{
+    results,_ := userService.Db.Query("SELECT * FROM user")
     var userDataList []UserData
     for results.Next() {
         var userData UserData

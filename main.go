@@ -17,10 +17,10 @@ func main() {
     fmt.Println("connect success")
 
     defer db.Close()
-    users := users.Read(db)
+    userService := users.UserService{Db: db}
+
+    users := userService.Read()
    fmt.Println(users)
 //     fmt.Println(readByCitizenId(db,"1552425252111"))
 //    fmt.Println(read(db))
 }
-
-
